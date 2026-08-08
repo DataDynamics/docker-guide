@@ -29,9 +29,15 @@
     - [서비스 설정 항목 자세히 보기](#서비스-설정-항목-자세히-보기)
     - [환경별로 설정 나누기 (override)](#환경별로-설정-나누기-override)
     - [Compose 자주 쓰는 명령](#compose-자주-쓰는-명령)
-12. [정리와 청소](#정리와-청소)
-13. [자주 마주치는 문제와 해결법](#자주-마주치는-문제와-해결법)
-14. [자주 쓰는 명령 한눈에 보기](#자주-쓰는-명령-한눈에-보기)
+12. [Docker의 대안, Podman 사용하기](#docker의-대안-podman-사용하기)
+    - [Podman은 Docker와 무엇이 다른가요?](#podman은-docker와-무엇이-다른가요)
+    - [Podman 설치하기](#podman-설치하기)
+    - [Docker처럼 쓰기](#docker처럼-쓰기)
+    - [Podman만의 특징: 파드(pod)](#podman만의-특징-파드pod)
+    - [Compose와 systemd 연동](#compose와-systemd-연동)
+13. [정리와 청소](#정리와-청소)
+14. [자주 마주치는 문제와 해결법](#자주-마주치는-문제와-해결법)
+15. [자주 쓰는 명령 한눈에 보기](#자주-쓰는-명령-한눈에-보기)
 
 ---
 
@@ -612,6 +618,108 @@ docker compose down
 ```bash
 docker compose down -v
 ```
+
+## Docker의 대안, Podman 사용하기
+
+앞의 설치 항목에서 rootless 실행을 이야기하며 Podman을 잠깐 언급했습니다. Podman도 결국 컨테이너를 다루는 도구라 Docker와 짝을 이루므로, 여기서 조금 더 자세히 살펴보겠습니다. 반가운 소식은, 지금까지 배운 Docker 사용법을 거의 그대로 Podman에서도 쓸 수 있다는 점입니다. 그래서 새로 배울 것이 생각보다 적습니다.
+
+### Podman은 Docker와 무엇이 다른가요?
+
+Podman은 Docker를 대신할 수 있는 컨테이너 도구입니다. 겉으로 쓰는 방법은 거의 같지만, 속을 들여다보면 몇 가지 중요한 차이가 있습니다.
+
+첫째, **데몬이 없습니다(daemonless).** Docker는 항상 백그라운드에서 돌아가는 데몬(dockerd)에게 요청을 전달하는 방식이었지요. 반면 Podman은 그런 상시 대기 프로그램 없이, 명령을 내리면 그 자리에서 곧바로 컨테이너를 실행합니다. 중앙에서 모든 것을 관장하는 데몬이 없으니, 그 데몬이 멈춰서 전체가 마비되는 일도 없습니다.
+
+둘째, **기본적으로 root 없이 동작합니다(rootless).** Docker에서는 rootless 모드를 따로 설정해야 했지만, Podman은 처음부터 일반 사용자 권한으로 도는 것을 기본으로 삼습니다. 그래서 여러 사람이 함께 쓰는 서버에서 보안상 유리합니다.
+
+셋째, **명령어가 Docker와 거의 똑같습니다.** `docker`를 `podman`으로 바꾸기만 하면 대부분 그대로 동작합니다. 사용하는 이미지도 Docker와 완전히 같은 표준(OCI)을 따르므로, Docker Hub 등에 올라온 이미지를 그대로 내려받아 쓸 수 있습니다. Dockerfile 역시 수정 없이 그대로 빌드됩니다.
+
+넷째, **완전한 오픈소스**라서 Docker Desktop과 같은 상업용 라이선스 조건을 신경 쓸 필요가 없습니다. 회사 규모에 따라 유료 조건이 걸리는 Docker Desktop 대신 Podman을 택하는 경우도 많습니다.
+
+### Podman 설치하기
+
+**Linux**
+
+리눅스에서는 배포판의 패키지 관리자로 간단히 설치할 수 있습니다.
+
+```bash
+# 우분투 / 데비안 계열
+sudo apt install -y podman
+
+# 페도라 / RHEL 계열
+sudo dnf install -y podman
+```
+
+**macOS**
+
+Podman은 리눅스 컨테이너를 실행하는 도구라, macOS에서는 내부적으로 가벼운 리눅스 가상 머신이 필요합니다. Homebrew로 Podman을 설치한 뒤, 이 가상 머신을 한 번 만들어 시작해 주면 됩니다.
+
+```bash
+brew install podman
+podman machine init      # 가상 머신을 처음 한 번 만들기
+podman machine start     # 가상 머신 시작하기
+```
+
+화면(GUI)으로 관리하고 싶다면 [Podman Desktop](https://podman-desktop.io)이라는 앱을 설치해도 됩니다. Windows에서도 이 Podman Desktop을 통해 손쉽게 설치하고 쓸 수 있습니다.
+
+**설치 확인**
+
+```bash
+podman --version
+podman run docker.io/library/hello-world
+```
+
+환영 메시지가 나오면 준비가 끝난 것입니다. Podman은 이미지 주소를 명확히 적는 것을 권장하기 때문에, 위 예처럼 `docker.io/library/`를 앞에 붙여 주면 헷갈릴 일이 없습니다.
+
+### Docker처럼 쓰기
+
+앞에서 익힌 Docker 명령들은 `docker`를 `podman`으로 바꾸면 그대로 통합니다. 몇 가지만 예로 들어 보겠습니다.
+
+```bash
+podman pull nginx
+podman run -d -p 8080:80 --name my-web nginx
+podman ps
+podman logs -f my-web
+podman exec -it my-web bash
+podman stop my-web
+podman build -t my-app:1.0 .
+```
+
+`docker`라는 명령을 손에 익힌 그대로 쓰고 싶다면, Podman을 `docker`라는 이름으로 부르도록 별칭을 걸어 둘 수 있습니다.
+
+```bash
+alias docker=podman
+```
+
+리눅스에서는 `podman-docker`라는 패키지를 설치하면 `docker` 명령이 자동으로 Podman으로 연결되도록 해 주기도 합니다. 이렇게 해 두면 기존 스크립트나 문서를 거의 고치지 않고도 Podman으로 옮겨 갈 수 있습니다.
+
+### Podman만의 특징: 파드(pod)
+
+Podman의 이름은 "파드(pod)"라는 개념에서 왔습니다. 파드는 여러 컨테이너를 하나로 묶는 상자라고 생각하면 됩니다. 같은 파드에 담긴 컨테이너들은 네트워크와 포트를 함께 나눠 쓰기 때문에, 서로 아주 가깝게 붙어서 협력하는 컨테이너들을 묶어 관리하기에 좋습니다. 이 개념은 컨테이너 오케스트레이션 도구인 쿠버네티스(Kubernetes)의 파드와 같아서, 나중에 쿠버네티스로 넘어갈 때도 자연스럽게 이어집니다.
+
+파드를 만들고 그 안에 컨테이너를 넣는 흐름은 다음과 같습니다.
+
+```bash
+podman pod create --name my-pod -p 8080:80   # 포트를 파드 단위로 연다
+podman run -d --pod my-pod nginx             # 파드 안에 컨테이너를 넣는다
+podman pod ps                                # 파드 목록 보기
+podman pod stop my-pod                        # 파드 통째로 멈추기
+podman pod rm my-pod                          # 파드 통째로 삭제
+```
+
+포트를 개별 컨테이너가 아니라 파드에 여는 점, 그리고 파드를 단위로 한 번에 멈추고 지울 수 있는 점이 특징입니다.
+
+### Compose와 systemd 연동
+
+여러 컨테이너를 한 번에 띄우는 Docker Compose도 Podman에서 쓸 수 있습니다. 최신 Podman에는 `podman compose` 명령이 포함되어 있어, 앞서 배운 `docker-compose.yml` 파일을 거의 그대로 활용할 수 있습니다. (내부적으로 `podman-compose`나 Docker Compose 도구를 이용합니다.)
+
+```bash
+podman compose up -d
+podman compose down
+```
+
+한 가지 Podman이 특히 강점을 보이는 부분은 서버에서의 자동 실행입니다. 리눅스 서버에서는 컨테이너를 systemd라는 서비스 관리자에 등록해, 서버가 켜질 때 컨테이너가 자동으로 함께 시작되도록 만들 수 있습니다. 데몬이 없는 Podman은 이 방식과 잘 어울립니다. 요즘은 "Quadlet"이라는 방법으로 간단한 설정 파일을 두어 컨테이너를 systemd 서비스처럼 다루는 것이 권장됩니다. 서버 운영 단계에서 필요해지면 [Podman 공식 문서](https://docs.podman.io)의 systemd/Quadlet 항목을 참고하면 됩니다.
+
+정리하면, Podman은 "데몬 없이, root 없이 동작하는 Docker"에 가깝습니다. 이미 Docker를 익혔다면 대부분의 명령을 그대로 쓰면서, 보안과 서버 운영 면에서 이점을 더 얻고 싶을 때 좋은 선택입니다.
 
 ## 정리와 청소
 
