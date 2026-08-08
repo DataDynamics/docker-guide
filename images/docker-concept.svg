@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 460" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- panel -->
+  <rect x="8" y="8" width="904" height="444" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- title -->
+  <text x="460" y="46" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">Docker의 핵심 흐름</text>
+  <text x="460" y="70" text-anchor="middle" font-size="13" fill="#64748b">레지스트리에서 이미지를 내려받아(pull) 실행하면(run) 컨테이너가 됩니다</text>
+
+  <!-- Registry -->
+  <rect x="40" y="120" width="230" height="250" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="155" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#3730a3">레지스트리 (Registry)</text>
+  <text x="155" y="171" text-anchor="middle" font-size="11" fill="#6366f1">이미지 창고 · 앱 마켓</text>
+  <text x="155" y="187" text-anchor="middle" font-size="11" fill="#6366f1">(예: Docker Hub)</text>
+  <!-- stacked images inside registry -->
+  <rect x="78" y="210" width="154" height="40" rx="6" fill="#ffffff" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="155" y="235" text-anchor="middle" font-size="12" fill="#4f46e5">nginx</text>
+  <rect x="78" y="258" width="154" height="40" rx="6" fill="#ffffff" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="155" y="283" text-anchor="middle" font-size="12" fill="#4f46e5">mysql</text>
+  <rect x="78" y="306" width="154" height="40" rx="6" fill="#ffffff" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="155" y="331" text-anchor="middle" font-size="12" fill="#4f46e5">python …</text>
+
+  <!-- Image -->
+  <rect x="360" y="185" width="190" height="120" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+  <text x="455" y="222" text-anchor="middle" font-size="16" font-weight="700" fill="#047857">이미지 (Image)</text>
+  <text x="455" y="248" text-anchor="middle" font-size="11" fill="#059669">레시피 · 설계도</text>
+  <text x="455" y="266" text-anchor="middle" font-size="11" fill="#059669">(읽기 전용)</text>
+
+  <!-- Containers -->
+  <rect x="650" y="110" width="220" height="72" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+  <text x="760" y="140" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">컨테이너 (Container)</text>
+  <text x="760" y="160" text-anchor="middle" font-size="11" fill="#ea580c">실제로 실행되는 요리 #1</text>
+
+  <rect x="650" y="209" width="220" height="72" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+  <text x="760" y="239" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">컨테이너 (Container)</text>
+  <text x="760" y="259" text-anchor="middle" font-size="11" fill="#ea580c">실제로 실행되는 요리 #2</text>
+
+  <rect x="650" y="308" width="220" height="72" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+  <text x="760" y="338" text-anchor="middle" font-size="15" font-weight="700" fill="#c2410c">컨테이너 (Container)</text>
+  <text x="760" y="358" text-anchor="middle" font-size="11" fill="#ea580c">실제로 실행되는 요리 #3</text>
+
+  <!-- arrow: registry -> image -->
+  <line x1="272" y1="245" x2="352" y2="245" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="312" y="233" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">pull</text>
+  <text x="312" y="266" text-anchor="middle" font-size="10" fill="#64748b">내려받기</text>
+
+  <!-- arrows: image -> containers (fan out) -->
+  <line x1="552" y1="235" x2="648" y2="146" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="552" y1="245" x2="648" y2="245" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="552" y1="255" x2="648" y2="344" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="600" y="230" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">run</text>
+  <text x="600" y="270" text-anchor="middle" font-size="10" fill="#64748b">실행</text>
+
+  <!-- note -->
+  <text x="760" y="404" text-anchor="middle" font-size="11" fill="#94a3b8">하나의 이미지로 여러 컨테이너를 만들 수 있습니다</text>
+</svg>
