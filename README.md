@@ -38,6 +38,8 @@
 13. [정리와 청소](#정리와-청소)
 14. [자주 마주치는 문제와 해결법](#자주-마주치는-문제와-해결법)
 15. [자주 쓰는 명령 한눈에 보기](#자주-쓰는-명령-한눈에-보기)
+16. [용어집](#용어집)
+17. [관련 도구와 링크](#관련-도구와-링크)
 
 ---
 
@@ -772,3 +774,59 @@ Docker의 실제 엔진이 켜져 있지 않을 때 나는 오류입니다. macO
 | 안 쓰는 자원 청소 | `docker system prune` |
 
 이 정도만 익혀 두어도 일상적인 개발과 배포에서 Docker로 곤란할 일은 거의 없을 것입니다. 처음에는 `run`, `ps`, `stop`, `logs` 네 가지로 컨테이너를 다루는 감을 잡고, 익숙해지면 Dockerfile로 나만의 이미지를 만들고, 마지막으로 Docker Compose로 여러 컨테이너를 엮는 순서로 넓혀 가기를 권합니다.
+
+---
+
+## 용어집
+
+이 문서에 등장한 용어들을 한자리에 모아 간단히 정리했습니다. 읽다가 헷갈리는 단어가 나오면 여기서 빠르게 찾아보세요.
+
+| 용어 | 뜻 |
+| --- | --- |
+| **컨테이너 (Container)** | 프로그램과 그 실행에 필요한 모든 것을 담아 격리된 채로 실제 돌아가는 실행 단위. "이미지로 만들어 낸 요리"에 해당합니다. |
+| **이미지 (Image)** | 컨테이너를 만들기 위한 읽기 전용 설계도이자 재료 묶음. "레시피"에 해당하며, 실행하면 컨테이너가 됩니다. |
+| **레지스트리 (Registry)** | 이미지를 모아 두고 나눠 주는 저장소. 대표적인 곳이 Docker Hub입니다. |
+| **Docker Hub** | 가장 널리 쓰이는 공개 레지스트리. 잘 만들어진 이미지를 내려받아 바로 쓸 수 있습니다. |
+| **태그 (Tag)** | 이미지의 버전 이름표. `nginx:1.27`에서 `1.27` 부분이며, 생략하면 `latest`가 기본입니다. |
+| **데몬 (Docker daemon, dockerd)** | 실제로 컨테이너를 만들고 관리하는 백그라운드 프로그램. `docker` 명령은 이 데몬에 요청을 전달합니다. |
+| **볼륨 (Volume)** | 컨테이너 바깥에 데이터를 따로 보관하는 저장 공간. 컨테이너를 지워도 데이터가 남습니다. |
+| **바인드 마운트 (Bind mount)** | 내 컴퓨터의 실제 폴더를 컨테이너 안에 직접 연결하는 방식. 개발 중 코드 반영에 유용합니다. |
+| **포트 (Port)** | 컨테이너와 바깥세상을 잇는 통로. `-p 8080:80`으로 내 컴퓨터 포트와 컨테이너 포트를 연결합니다. |
+| **Dockerfile** | 이미지를 어떻게 만들지 한 줄씩 적어 둔 설계도 파일. |
+| **레이어 (Layer)** | Dockerfile의 명령 하나하나가 쌓이는 얇은 층. 바뀌지 않은 층은 캐시로 재사용됩니다. |
+| **멀티 스테이지 빌드** | 빌드용 공간과 실행용 공간을 나누어 최종 이미지를 가볍게 만드는 기법. |
+| **Docker Compose** | 여러 컨테이너 구성을 `docker-compose.yml` 파일 하나로 정의해 한 번에 띄우고 내리는 도구. |
+| **헬스체크 (Healthcheck)** | 컨테이너가 켜진 것을 넘어 실제로 응답할 준비가 됐는지 주기적으로 점검하는 기능. |
+| **WSL2** | 윈도우에서 리눅스를 돌릴 수 있게 해 주는 호환 환경. 윈도우용 Docker Desktop의 기반입니다. |
+| **rootless** | 컨테이너 엔진을 root가 아닌 일반 사용자 권한으로 실행하는 방식. 보안에 유리합니다. |
+| **파드 (Pod)** | 여러 컨테이너를 하나로 묶어 네트워크를 공유하게 하는 단위. Podman과 쿠버네티스의 핵심 개념입니다. |
+| **OCI** | 컨테이너 이미지와 실행 방식에 대한 공개 표준. 덕분에 Docker와 Podman이 같은 이미지를 씁니다. |
+| **오케스트레이션 (Orchestration)** | 많은 컨테이너를 자동으로 배치·확장·관리하는 일. 대표 도구가 쿠버네티스입니다. |
+
+---
+
+## 관련 도구와 링크
+
+이 문서에서 다룬 도구와 개념들의 공식 자료를 모았습니다. 더 깊이 알아보고 싶을 때 참고하세요.
+
+**컨테이너 실행 도구**
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — Windows·macOS용 공식 Docker 앱
+- [OrbStack](https://orbstack.dev) — 가볍고 빠른 macOS 전용 Docker 실행 도구
+- [Rancher Desktop](https://rancherdesktop.io) — Docker Desktop 대안 데스크톱 앱(쿠버네티스 포함)
+- [Podman](https://podman.io) — 데몬 없이 rootless로 동작하는 Docker 대안
+- [Podman Desktop](https://podman-desktop.io) — Podman을 화면(GUI)으로 관리하는 앱
+
+**공식 문서 · 레퍼런스**
+
+- [Docker 공식 문서](https://docs.docker.com) — Docker 전반의 공식 안내서
+- [Docker Hub](https://hub.docker.com) — 공개 이미지 레지스트리
+- [Dockerfile 레퍼런스](https://docs.docker.com/reference/dockerfile/) — Dockerfile 명령어 전체 설명
+- [Docker Compose 문서](https://docs.docker.com/compose/) — Compose 사용법과 파일 문법
+- [Rootless 모드 문서](https://docs.docker.com/engine/security/rootless/) — root 없이 Docker 실행하기
+- [Podman 공식 문서](https://docs.podman.io) — Podman 사용법과 systemd/Quadlet 연동
+
+**관련 기술**
+
+- [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/windows/wsl/) — 윈도우용 Docker Desktop의 기반
+- [Kubernetes](https://kubernetes.io) — 컨테이너 오케스트레이션의 대표 도구
