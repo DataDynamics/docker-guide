@@ -10,6 +10,7 @@
     - [macOS — OrbStack 또는 Docker Desktop](#macos--orbstack-또는-docker-desktop)
     - [Windows — Docker Desktop](#windows--docker-desktop)
     - [Linux](#linux)
+    - [Linux에서 root 권한과 rootless 실행](#linux에서-root-권한과-rootless-실행)
     - [설치 확인하기](#설치-확인하기)
 4. [첫 컨테이너 실행해 보기](#첫-컨테이너-실행해-보기)
 5. [이미지 다루기](#이미지-다루기)
@@ -103,6 +104,34 @@ curl -fsSL https://get.docker.com | sh
 ```bash
 sudo usermod -aG docker $USER
 ```
+
+### Linux에서 root 권한과 rootless 실행
+
+리눅스에서 Docker는 조금 특별한 구조로 동작합니다. 실제로 컨테이너를 만들고 관리하는 것은 "Docker 데몬(dockerd)"이라는 백그라운드 프로그램인데, 이 데몬은 기본적으로 **root(최고 관리자) 권한으로 실행**됩니다. 우리가 입력하는 `docker` 명령은 이 root 데몬에게 "이렇게 해 달라"고 요청을 전달하는 심부름꾼일 뿐입니다. 그래서 일반 사용자가 그냥 `docker` 명령을 쓰면 데몬에 접근할 권한이 없어 오류가 나고, 그때마다 `sudo`를 붙이거나 앞서처럼 사용자를 `docker` 그룹에 넣어 주어야 합니다.
+
+여기서 꼭 짚고 넘어갈 점이 있습니다. 사용자를 `docker` 그룹에 넣는 것은 편하지만, 사실상 그 사용자에게 **root와 맞먹는 권한**을 주는 것과 같습니다. docker 그룹에 속하면 root로 도는 데몬을 통해 시스템 어디든 건드릴 수 있기 때문입니다. 개인 개발용 PC에서는 흔히 감수하는 부분이지만, 여러 사람이 함께 쓰는 서버라면 보안상 주의가 필요합니다.
+
+이런 이유로, 데몬 자체를 root가 아닌 일반 사용자 권한으로 돌리는 방법들이 마련되어 있습니다. 여기서 오해하기 쉬운 점 하나를 바로잡자면, **root 없이 특정 사용자로 Docker를 돌리기 위해 반드시 Rancher 같은 별도 도구가 필요한 것은 아닙니다.** 대표적인 선택지는 다음과 같습니다.
+
+**Rootless Docker (Docker에 기본 포함)**
+
+사실 Docker에는 데몬을 일반 사용자 권한으로 실행하는 "rootless 모드"가 기본으로 들어 있습니다. 즉, 다른 도구를 새로 깔지 않고도 root 없이 쓸 수 있습니다. 아래 스크립트로 현재 사용자 전용 데몬을 설치할 수 있습니다.
+
+```bash
+dockerd-rootless-setuptool.sh install
+```
+
+이렇게 하면 Docker가 그 사용자 권한으로만 동작하므로, 혹시 컨테이너가 뚫리더라도 피해 범위가 그 사용자 선으로 제한되어 훨씬 안전합니다. 다만 1024 미만의 낮은 포트를 여는 등 일부 기능에는 추가 설정이 필요할 수 있습니다.
+
+**Podman**
+
+Podman은 아예 데몬 없이(daemonless), 그리고 기본적으로 rootless로 동작하도록 설계된 도구입니다. 명령어가 Docker와 거의 똑같아서 `docker`를 `podman`으로 바꿔 `podman run ...`처럼 쓰면 됩니다. `alias docker=podman`으로 이름을 맞춰 두고 그대로 쓰는 경우도 많습니다. 보안을 중시하는 서버 환경에서 특히 인기가 높습니다.
+
+**Rancher Desktop**
+
+Rancher Desktop은 앞서 소개한 Docker Desktop을 대신하는 데스크톱 앱으로, 화면(GUI)으로 컨테이너와 쿠버네티스 환경을 관리할 수 있게 해 줍니다. 내부적으로 rootless 방식으로 동작할 수 있어, root 없이 편하게 쓰고 싶은 데스크톱 사용자에게 좋은 선택입니다.
+
+정리하면, 가볍게는 Docker의 rootless 모드로 충분하고, 데몬 없는 방식을 원하면 Podman, 화면으로 편하게 관리하고 싶으면 Rancher Desktop을 고르는 식으로 상황에 맞게 선택하면 됩니다.
 
 ### 설치 확인하기
 
