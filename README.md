@@ -7,6 +7,10 @@
 1. [Docker란 무엇인가요?](#docker란-무엇인가요)
 2. [꼭 알아야 할 세 가지 개념: 이미지, 컨테이너, 레지스트리](#꼭-알아야-할-세-가지-개념-이미지-컨테이너-레지스트리)
 3. [설치하기](#설치하기)
+    - [macOS — OrbStack 또는 Docker Desktop](#macos--orbstack-또는-docker-desktop)
+    - [Windows — Docker Desktop](#windows--docker-desktop)
+    - [Linux](#linux)
+    - [설치 확인하기](#설치-확인하기)
 4. [첫 컨테이너 실행해 보기](#첫-컨테이너-실행해-보기)
 5. [이미지 다루기](#이미지-다루기)
 6. [컨테이너 다루기](#컨테이너-다루기)
@@ -52,17 +56,39 @@ Docker를 쓰기 전에 세 가지 용어만 확실히 잡고 가면 나머지�
 
 ## 설치하기
 
-### macOS와 Windows
+### macOS — OrbStack 또는 Docker Desktop
 
-macOS나 Windows에서는 "Docker Desktop"이라는 프로그램을 설치하는 것이 가장 간편합니다. [Docker 공식 사이트](https://www.docker.com/products/docker-desktop/)에서 자신의 운영체제에 맞는 설치 파일을 받아 실행하면 됩니다. Docker Desktop은 Docker를 실행하는 데 필요한 모든 것을 담고 있어, 설치 후 프로그램을 켜 두기만 하면 바로 쓸 수 있습니다.
+macOS에서 Docker를 쓰는 방법은 크게 두 가지입니다. 요즘은 가볍고 빠른 **OrbStack**을 많이 씁니다.
 
-macOS에서 Homebrew를 쓴다면 아래처럼 설치할 수도 있습니다.
+**OrbStack (권장)**
+
+OrbStack은 macOS 전용으로 만들어진 도구로, Docker 컨테이너를 아주 가볍고 빠르게 실행해 줍니다. 명령어 자체는 Docker와 똑같아서(똑같이 `docker` 명령을 씁니다) 이 문서의 내용을 그대로 따라 하면 되지만, 켜지는 속도가 빠르고 메모리와 배터리를 훨씬 덜 먹는다는 점이 큰 장점입니다. 그래서 노트북에서 개발하는 분들에게 특히 잘 어울립니다.
+
+Homebrew로 간단히 설치할 수 있습니다.
+
+```bash
+brew install orbstack
+```
+
+또는 [OrbStack 공식 사이트](https://orbstack.dev)에서 설치 파일을 받아 실행해도 됩니다. 설치 후 OrbStack 앱을 한 번 실행해 두면, 이후로는 터미널에서 `docker` 명령을 바로 쓸 수 있습니다.
+
+**Docker Desktop (대안)**
+
+가장 널리 알려진 공식 도구입니다. 회사나 팀에서 표준으로 정해 두었다면 이쪽을 쓰면 됩니다. [Docker 공식 사이트](https://www.docker.com/products/docker-desktop/)에서 설치 파일을 받거나, Homebrew로 설치할 수 있습니다.
 
 ```bash
 brew install --cask docker
 ```
 
 설치 후에는 응용 프로그램 목록에서 Docker를 한 번 실행해, 상단 막대에 고래 모양 아이콘이 나타나는지 확인하세요. 이 아이콘이 있어야 Docker가 켜진 상태입니다.
+
+> OrbStack과 Docker Desktop을 동시에 켜 두면 서로 충돌할 수 있으니, 둘 중 하나만 실행하는 것이 좋습니다.
+
+### Windows — Docker Desktop
+
+Windows에서는 **Docker Desktop**을 씁니다. (OrbStack은 macOS 전용이라 Windows에서는 쓸 수 없습니다.) [Docker 공식 사이트](https://www.docker.com/products/docker-desktop/)에서 설치 파일을 받아 실행하면 됩니다.
+
+Windows의 Docker Desktop은 WSL2라는 리눅스 호환 환경을 기반으로 동작합니다. 설치 과정에서 WSL2를 함께 켜도록 안내가 나오면 그대로 따르면 되고, 특별한 사정이 없다면 WSL2 방식을 쓰는 것이 성능 면에서 유리합니다. 설치가 끝나면 Docker Desktop을 실행해, 작업 표시줄에 고래 모양 아이콘이 나타나는지 확인하세요.
 
 ### Linux
 
@@ -575,7 +601,7 @@ docker system prune -a --volumes
 ## 자주 마주치는 문제와 해결법
 
 **`Cannot connect to the Docker daemon` 같은 오류가 납니다.**
-Docker의 실제 엔진이 켜져 있지 않을 때 나는 오류입니다. macOS나 Windows라면 Docker Desktop 프로그램이 실행 중인지(고래 아이콘이 떠 있는지) 확인하세요. 리눅스라면 `sudo systemctl start docker`로 서비스를 켤 수 있습니다.
+Docker의 실제 엔진이 켜져 있지 않을 때 나는 오류입니다. macOS라면 OrbStack 또는 Docker Desktop 앱이, Windows라면 Docker Desktop 앱이 실행 중인지(고래 아이콘이 떠 있는지) 확인하세요. 리눅스라면 `sudo systemctl start docker`로 서비스를 켤 수 있습니다.
 
 **리눅스에서 명령마다 `permission denied`가 나옵니다.**
 현재 사용자가 docker 그룹에 속해 있지 않아서일 수 있습니다. 앞의 설치 항목에서 소개한 `sudo usermod -aG docker $USER`를 실행한 뒤, 로그아웃했다가 다시 로그인해 보세요.
